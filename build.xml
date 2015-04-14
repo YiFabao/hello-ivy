@@ -1,0 +1,64 @@
+<project name="hello-hibernate" default="execute" xmlns:ivy="antlib:org.apache.ivy.ant">
+	<!-- 编译目录 -->
+    <property name = "build.dir" value="build/classes"/>
+    <property name = "build.test.dir" value="build/classes"/>
+    <!-- 发布目录 -->
+    <property name = "dist.dir" value = "dist" />
+    <!-- 引用第三方包目录 -->
+    <property name = "lib.dir" value = "lib" />
+    <!-- 源码目录 -->
+    <property name = "src.dir" value = "src" />
+    <property name = "test.dir" value = "test" />
+
+    <!-- 资源目录 -->
+    <property name = "resources.dir" value = "resources" />
+    
+    <path id="compile.classpath">
+		<fileset dir="lib">
+		    <include name="**/*.jar"/>
+		</fileset>        
+    </path>
+    <path id="run.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="${build.dir}"/>
+    </path>
+    
+    
+
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" /> 
+		<copy todir="${build.dir}">
+		    <fileset dir="${src.dir}">
+		        <exclude name="**/*.java"/>
+		    </fileset>
+		</copy>
+	</target>
+    
+    <target name = "resolve" depends= "init" description = "--> retrive dependencies with ivy">
+        <ivy:retrieve />
+    </target>
+    
+    <target name = "compile" depends = "resolve" description = "--> compile and run the project">
+        <javac destdir="${build.dir}" includeAntRuntime="false">
+            <src path="${src.dir}"/>
+            <classpath refid="compile.classpath"/>
+        </javac>
+    </target>
+    
+    <target name = "archive" depends="compile" description="-->archive">
+        <jar destfile="${dist.dir}/hello-ivy.jar" basedir="${build.dir}"/>
+    </target>
+
+    <target name = "execute" depends = "compile" description ="--> execute ..">
+        <java classname = "example.Hello" classpathref="run.classpath" />
+    </target>
+    
+    <target name ="clean" depends = "init" description="-->clean ">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+</project>
+
+
