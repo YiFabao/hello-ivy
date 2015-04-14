@@ -1,15 +1,13 @@
 <project name="hello-hibernate" default="execute" xmlns:ivy="antlib:org.apache.ivy.ant">
 	<!-- 编译目录 -->
-    <property name = "build.dir" value="build/classes"/>
-    <property name = "build.test.dir" value="build/classes"/>
+    <property name = "build.dir" value="build"/>
+    <property name = "build.classes.dir" value="build/classes"/>
     <!-- 发布目录 -->
     <property name = "dist.dir" value = "dist" />
     <!-- 引用第三方包目录 -->
     <property name = "lib.dir" value = "lib" />
     <!-- 源码目录 -->
     <property name = "src.dir" value = "src" />
-    <property name = "test.dir" value = "test" />
-
     <!-- 资源目录 -->
     <property name = "resources.dir" value = "resources" />
     
@@ -20,18 +18,14 @@
     </path>
     <path id="run.classpath">
         <path refid="compile.classpath"/>
-        <pathelement location="${build.dir}"/>
+        <pathelement location="${build.classes.dir}"/>
     </path>
-    
-    
 
 	<target name="init">
-		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.classes.dir}" />
 		<mkdir dir="${dist.dir}" /> 
-		<copy todir="${build.dir}">
-		    <fileset dir="${src.dir}">
-		        <exclude name="**/*.java"/>
-		    </fileset>
+		<copy todir="${build.classes.dir}">
+		    <fileset dir="${resources.dir}"/>
 		</copy>
 	</target>
     
@@ -40,7 +34,7 @@
     </target>
     
     <target name = "compile" depends = "resolve" description = "--> compile and run the project">
-        <javac destdir="${build.dir}" includeAntRuntime="false">
+        <javac destdir="${build.classes.dir}" includeAntRuntime="false">
             <src path="${src.dir}"/>
             <classpath refid="compile.classpath"/>
         </javac>
@@ -57,6 +51,51 @@
     <target name ="clean" depends = "init" description="-->clean ">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
+    </target>
+    
+    <!-- =====================================测　试============================================= -->
+    <property name="test.suite" value="example.AllJUnitTests"/>
+    
+    <!-- 定义几个文目录，构建测试框架  -->
+    <property name="test.dir" location="${build.dir}/test"/>
+    <property name="test.classes.dir" location="${test.dir}/classes"/>
+    <property name="test.data.dir" location="${test.dir}/data"/>
+    <property name="test.reports.dir" location="${test.dir}/reports"/>
+    
+    <!-- 编译 classpath 路径 -->
+    <path id="test.compile.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="${build.classes.dir}"/>
+    </path>
+    
+    <!-- 运行测试的　classpath　路径 -->
+    <path id="test.classpath">
+        <path refid="test.compile.classpath"/>
+        <pathelement location = "${test.classes.dir}"/>
+    </path>
+    
+    <target name="test-init">
+        <mkdir dir="${test.classes.dir}"/>
+        <delete dir="${test.data.dir}"/>
+        <delete dir="${test.reports.dir}"/>
+        <mkdir dir="${test.data.dir}"/>
+        <mkdir dir="${test.reports.dir}"/>
+    </target>
+    
+    <target name="test-compile" depends="compile,test-init">
+        <javac destdir="${test.classes.dir}"
+            	debug = "true"
+            	includeAntRuntime="false"
+            	srcdir="test">
+            <classpath refid="test.compile.classpath"/>
+        </javac>
+    </target>
+    
+    <target name="test-basic" depends="test-compile">
+        <junit>
+            <classpath refid="test.classpath"/>
+            <test name="${test.suite}"/>
+        </junit>
     </target>
 
 </project>
