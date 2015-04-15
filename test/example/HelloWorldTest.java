@@ -8,11 +8,9 @@ public class HelloWorldTest extends TestCase {
 		super(name);
 	}
 
-	public void testSayHello() {
+	public static void testSayHello() {
         HelloWorld world = new HelloWorld();
-        //assert( world!=null );
-        //assertEquals("Hello World",  world.sayHello() );
-        System.out.println(world.sayHello());
+        assertEquals(world.sayHello(),"helloworld");
 
     }
 }

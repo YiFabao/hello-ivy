@@ -1,5 +1,7 @@
 package example;
 
+import org.junit.runners.Suite;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -12,13 +14,13 @@ public class AllJUnitTests extends TestCase {
 
 	public AllJUnitTests(String name) {
 		super(name);
-		System.out.println(name);
 	}
 
 	
-	public static Test suit(){
+	public static Test suite(){
 		TestSuite suite = new TestSuite();
-		suite.addTestSuite(HelloWorldTest.class);//测试helloWorld
+		suite.addTestSuite(HelloWorldTest.class);
+		
 		return suite;
 	}
 	
